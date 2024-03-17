@@ -1,0 +1,101 @@
+import java.util.*;
+
+class Question {
+    private String question;
+    private List<String> options;
+    private int correctOption;
+
+    public Question(String question, List<String> options, int correctOption) {
+        this.question = question;
+        this.options = options;
+        this.correctOption = correctOption;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+
+    public int getCorrectOption() {
+        return correctOption;
+    }
+}
+
+public class Quiz {
+    private List<Question> questions;
+    private int currentQuestionIndex;
+    private int score;
+    private Timer timer;
+
+    public Quiz(List<Question> questions) {
+        this.questions = questions;
+        this.currentQuestionIndex = 0;
+        this.score = 0;
+    }
+
+    public void start() {
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                System.out.println("Time's up! Moving to the next question.");
+                displayNextQuestion();
+            }
+        }, 15000);
+
+        displayNextQuestion();
+    }
+
+    private void displayNextQuestion() {
+        if (currentQuestionIndex < questions.size()) {
+            Question currentQuestion = questions.get(currentQuestionIndex);
+            System.out.println("Question: " + currentQuestion.getQuestion());
+            List<String> options = currentQuestion.getOptions();
+            for (int i = 0; i < options.size(); i++) {
+                System.out.println((i + 1) + ". " + options.get(i));
+            }
+            takeUserInput();
+        } else {
+            endQuiz();
+        }
+    }
+
+    private void takeUserInput() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter your answer (1-" + questions.get(currentQuestionIndex).getOptions().size() + "): ");
+        int userAnswer = scanner.nextInt();
+        if (userAnswer == questions.get(currentQuestionIndex).getCorrectOption()) {
+            System.out.println("Correct!");
+            score++;
+        } else {
+            System.out.println("Incorrect. The correct answer was: " + questions.get(currentQuestionIndex).getCorrectOption());
+        }
+        currentQuestionIndex++;
+        timer.cancel(); 
+        start();
+    }
+
+    private void endQuiz() {
+        System.out.println("Quiz ended. Your score is: " + score + "/" + questions.size());
+    }
+
+    public static void main(String[] args) {
+        List<Question> questions = new ArrayList<>();
+        questions.add(new Question("What is the capital of France?", Arrays.asList("Paris", "Berlin", "London", "Madrid"), 1));
+        questions.add(new Question("Which planet is known as the Red Planet?", Arrays.asList("Venus", "Mars", "Jupiter", "Saturn"), 2));
+        questions.add(new Question("What is the largest mammal?", Arrays.asList("Elephant", "Blue Whale", "Giraffe", "Hippopotamus"), 2));
+        questions.add(new Question("Who wrote 'Romeo and Juliet'?", Arrays.asList("William Shakespeare", "Charles Dickens", "Jane Austen", "Mark Twain"), 1));
+        questions.add(new Question("What is the tallest mountain in the world?", Arrays.asList("Mount Everest", "K2", "Kangchenjunga", "Lhotse"), 1));
+        questions.add(new Question("Which country is known as the 'Land of the Rising Sun'?", Arrays.asList("China", "Japan", "Korea", "Vietnam"), 2));
+        questions.add(new Question("What is the chemical symbol for gold?", Arrays.asList("Au", "Ag", "Cu", "Fe"), 1));
+        questions.add(new Question("Which planet is closest to the sun?", Arrays.asList("Earth", "Mars", "Venus", "Mercury"), 4));
+        questions.add(new Question("What is the largest organ in the human body?", Arrays.asList("Heart", "Liver", "Skin", "Brain"), 3));
+        questions.add(new Question("Who painted the Mona Lisa?", Arrays.asList("Leonardo da Vinci", "Vincent van Gogh", "Pablo Picasso", "Michelangelo"), 1));
+
+        Quiz quiz = new Quiz(questions);
+        quiz.start();
+    }
+}
